@@ -1,0 +1,31 @@
+BES2015 <- readRDS("BES2015.rds")
+tail(BES2015)
+
+#Check the number
+apply(BES2015[6:10],2,table)
+
+#Fit the one-factor latent trait model
+result <- mirt(data = BES2015[,-(1:5)], model = 1, SE = TRUE)
+
+#Create a table with difficulty and discriminant parameters
+coef <- coef(result, simplify = TRUE)$items[,1:2]
+print(r.tmp <- coef(result, printSE=TRUE))
+#produce item probability functions, with probability of a correct answer on y and factor score on x
+plot(result,type='trace', xlab = "factor score", ylab = "P(correct answer)")
+#^adding labels was unsuccessful - not sure how to do this
+
+#Scatterplot with loading on y, difficulty on x, for each item
+#loading = a1, difficulty = d, want difficult on x, loading on y
+plot(coef[,2], coef[,1], xlab = "difficulty parameter", ylab = "loading (discrimination) parameter")
+
+#Add factor score as a variable
+BES2015$fscore <- as.vector(fscores(result, method = "EAP"))
+#Check that factor score has been added
+head(BES2015)
+
+#Histogram
+hist(BES2015$fscore, xlab = "Factor Score", ylab = "Frequency", main = "Histogram of Knowledge Scores")
+
+#Linear regression model for the knowledge scores given age, male and vote
+
+
